@@ -13,6 +13,11 @@
 5. **Drag and Drop:** Bring the index tip (`8`) and middle tip (`12`) (red dots) closer together to initiate drag mode. Move objects while the tips are close, and release to drop the object once the tips separate, keeping the pinky finger (pink dot) up.
 6. **Screenshot:** Take a screenshot by closing the pinky finger (pink dot) and forming a fist (all fingers closed), then opening the fist.
 
+## Hand Landmarks
+The following image shows the landmarks used for gesture recognition in the project:
+
+![Hand Landmarks](images/hand_landmarks.png)
+
 ## Installation
 ### Clone the repository:
 ```bash
