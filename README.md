@@ -50,10 +50,13 @@ Virtual-Mouse-with-Hand-Gestures/
 The `HandOperationModule.py` file is responsible for performing all recognitions and calculations related to hand gestures. It processes the video frames to detect hand landmarks and interprets the gestures based on predefined conditions. This module handles the core functionality of gesture recognition, enabling the main application to seamlessly control the mouse and perform various actions based on user input.
 
 ## Technologies Used
-- **OpenCV:** For video capturing and processing.
-- **Mediapipe:** For hand gesture recognition.
-- **PyAutoGUI:** For controlling the mouse.
-- **Pynput:** For handling advanced mouse controls.
+- **OpenCV**: For video capturing and processing.
+- **Mediapipe**: For hand gesture recognition.
+- **PyAutoGUI**: For controlling the mouse.
+- **Pynput**: For handling advanced mouse controls.
+- **NumPy**: For numerical operations and array manipulations (used indirectly through OpenCV).
+- **Math**: For mathematical calculations, particularly for distance calculations.
+- **Time**: For managing timing operations in the program.
 
 ## Future Improvements
 - Gesture customization for additional functionality.
