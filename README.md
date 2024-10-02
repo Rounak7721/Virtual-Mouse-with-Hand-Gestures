@@ -6,14 +6,14 @@ Virtual Mouse with Hand Gestures is a computer vision-based project that utilize
 
 
 ## Features
-Move Pointer: Move the pointer by bringing the thumb tip (4) and index finger pip (6) (two green points) closer together. When they are apart, it switches to click mode.
-Left Click: Perform a left click by putting the index finger (red point) down and up, mimicking the press of a mouse button.
-Right Click: Perform a right click by putting the middle finger (red point) down and up, similar to pressing the right button on a mouse.
-Scroll:
-Scroll Up: Close the ring finger (blue point) and simultaneously raise the index finger, keeping the pinky finger (pink dot) up.
-Scroll Down: Close the ring finger (blue point) and simultaneously raise the middle finger, keeping the pinky finger (pink dot) up.
-Drag and Drop: Bring the index tip (8) and middle tip (12) (red dots) closer together to initiate drag mode. Move objects while the tips are close, and release to drop the object once the tips separate, keeping the pinky finger (pink dot) up.
-Screenshot: Take a screenshot by closing the pinky finger (pink dot) and forming a fist (all fingers closed), then opening the fist.
+1. Move Pointer: Move the pointer by bringing the thumb tip (4) and index finger pip (6) (two green points) closer together. When they are apart, it switches to click mode.
+2. Left Click: Perform a left click by putting the index finger (red point) down and up, mimicking the press of a mouse button.
+3. Right Click: Perform a right click by putting the middle finger (red point) down and up, similar to pressing the right button on a mouse.
+4. Scroll:
+  Scroll Up: Close the ring finger (blue point) and simultaneously raise the index finger, keeping the pinky finger (pink dot) up.
+  Scroll Down: Close the ring finger (blue point) and simultaneously raise the middle finger, keeping the pinky finger (pink dot) up.
+5. Drag and Drop: Bring the index tip (8) and middle tip (12) (red dots) closer together to initiate drag mode. Move objects while the tips are close, and release to drop the object once the tips separate, keeping the pinky finger (pink dot) up.
+6. Screenshot: Take a screenshot by closing the pinky finger (pink dot) and forming a fist (all fingers closed), then opening the fist.
 
 
 ## Installation
@@ -29,7 +29,7 @@ Use the following command to start the virtual mouse:
 python VirtualMouse.py
 
 
-## Technologies Used:
+## Technologies Used
 OpenCV: For video capturing and processing.
 Mediapipe: For hand gesture recognition.
 PyAutoGUI: For controlling the mouse.
