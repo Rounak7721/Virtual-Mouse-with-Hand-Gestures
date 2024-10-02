@@ -16,7 +16,7 @@
 ## Hand Landmarks
 The following image shows the landmarks used for gesture recognition in the project:
 
-![Hand Landmarks](images/hand_landmarks.png)
+![Hand Landmarks](hand_landmarks.png)
 
 ## Installation
 ### Clone the repository:
