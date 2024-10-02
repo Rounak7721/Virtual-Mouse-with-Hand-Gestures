@@ -17,9 +17,10 @@ Screenshot: Take a screenshot by closing the pinky finger (pink dot) and forming
 
 
 ## Installation
-###Clone the repository:
+### Clone the repository:
 git clone https://github.com/Rounak7721/Virtual-Mouse-with-Hand-Gestures.git
-###Install the required dependencies: 
+
+### Install the required dependencies: 
 Navigate to the project directory and install the necessary Python libraries:
 pip install -r requirements.txt
 
