@@ -1,7 +1,7 @@
-# Virtual Mouse with Hand Gestures
+# Virtual Mouse with Computer Vision
 
 ## Description
-**Virtual Mouse with Hand Gestures** is a computer vision-based project that utilizes hand gestures to control the mouse pointer, perform clicks, scrolling, screenshots, and drag-and-drop actions. This project employs OpenCV, Mediapipe, PyAutoGUI, and Pynput for gesture recognition and cursor control, providing a hands-free way to interact with your computer.
+**Virtual Mouse with Computer Vision** is a computer vision-based project that utilizes hand gestures to control the mouse pointer, perform clicks, scrolling, screenshots, and drag-and-drop actions. This project employs OpenCV, Mediapipe, PyAutoGUI, and Pynput for gesture recognition and cursor control, providing a hands-free way to interact with your computer.
 
 ## Features
 1. Move Pointer: Move the pointer by bringing the thumb tip (4) and index finger pip (6) (two green points) closer together. When they are apart, it switches to click mode.

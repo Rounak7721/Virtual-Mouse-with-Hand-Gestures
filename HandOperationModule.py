@@ -185,7 +185,7 @@ def main():
         dist, frame, cordList = handOp.findDistance(p1=4, p2=8, frame=frame)
         # print(dist)
         # display frame
-        cv2.imshow("Virtual Mouse and Keyboard", frame)
+        cv2.imshow("Virtual Mouse", frame)
 
         # Exit condidtion
         if cv2.waitKey(1) & 0xFF == ord('q'):
