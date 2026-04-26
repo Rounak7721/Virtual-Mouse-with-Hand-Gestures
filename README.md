@@ -1,64 +1,128 @@
-# Virtual Mouse with Computer Vision
+# Virtual Mouse — Gesture-Controlled HCI System
 
 ## Description
-**Virtual Mouse with Computer Vision** is a computer vision-based project that utilizes hand gestures to control the mouse pointer, perform clicks, scrolling, screenshots, and drag-and-drop actions. This project employs OpenCV, Mediapipe, PyAutoGUI, and Pynput for gesture recognition and cursor control, providing a hands-free way to interact with your computer.
+**Virtual Mouse — Gesture-Controlled HCI System** is a computer vision and human-computer interaction (HCI) project that enables hands-free mouse control using real-time hand gesture recognition. Using webcam input, the system interprets finger movements and gestures to control cursor movement, clicks, scrolling, drag-and-drop, and screenshots.
+
+Built with OpenCV, MediaPipe, PyAutoGUI, and Pynput, the project demonstrates practical applications of real-time vision-based interaction systems.
 
 ## Features
-1. Move Pointer: Move the pointer by bringing the thumb tip (4) and index finger pip (6) (two green points) closer together. When they are apart, it switches to click mode.
-2. Left Click: Perform a left click by putting the index finger (red point) down and up, mimicking the press of a mouse button.
-3. Right Click: Perform a right click by putting the middle finger (red point) down and up, similar to pressing the right button on a mouse.
-4. Scroll:
-   1. Scroll Up: Close the ring finger (blue point) and simultaneously raise the index finger, keeping the pinky finger (pink dot) up.
-   2. Scroll Down: Close the ring finger (blue point) and simultaneously raise the middle finger, keeping the pinky finger (pink dot) up.
-5. Drag and Drop: Bring the index tip (8) and middle tip (12) (red dots) closer together to initiate drag mode. Move objects while the tips are close, and release to drop the object once the tips separate, keeping the pinky finger (pink dot) up.
-6. Screenshot: Take a screenshot by closing the pinky finger (pink dot) and forming a fist (all fingers closed), then opening the fist.
+
+### 1. Cursor Movement
+Control the mouse pointer by bringing the thumb tip (4) and index finger PIP (6) closer together.  
+When separated, the system switches to click interaction mode.
+
+### 2. Left Click
+Trigger a left click by lowering and raising the index finger, mimicking a button press.
+
+### 3. Right Click
+Trigger a right click by lowering and raising the middle finger.
+
+### 4. Scrolling
+- **Scroll Up:** Close the ring finger while keeping the index finger raised and pinky extended.
+- **Scroll Down:** Close the ring finger while keeping the middle finger raised and pinky extended.
+
+### 5. Drag and Drop
+Bring the index tip (8) and middle tip (12) together to enter drag mode.  
+Move objects while fingers remain close, and release when separated.
+
+### 6. Screenshot Capture
+Take screenshots by making a closed fist (all fingers down) and reopening the hand.
+
+---
 
 ## Hand Landmarks
-The following image shows the landmarks used for gesture recognition in the project:
+The following image shows the landmarks used for gesture recognition:
 
 ![Hand Landmarks](hand_landmarks.png)
 
+---
+
 ## Installation
-### Clone the repository:
+
+### Clone the Repository
 ```bash
 git clone https://github.com/Rounak7721/Virtual-Mouse-with-Hand-Gestures.git
+cd Virtual-Mouse-with-Hand-Gestures
 ```
 
-### Install the required dependencies: 
-Navigate to the project directory and install the necessary Python libraries:
+### Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run the project: 
-Use the following command to start the virtual mouse:
+### Run the Project
 ```bash
 python VirtualMouse.py
 ```
 
+---
+
 ## Project Structure
-```
+```text
 Virtual-Mouse-with-Hand-Gestures/
 │
-├── requirements.txt          # List of dependencies
-├── HandOperationModule.py    # Performs all recognitions, calculations, and landmark detections
-├── VirtualMouse.py           # Main file that uses HandOperationModule to process gestures and control the mouse
-└── README.md                 # Project documentation
+├── requirements.txt
+├── HandOperationModule.py     # Gesture recognition and landmark processing
+├── VirtualMouse.py            # Main application logic
+└── README.md
 ```
 
-## HandOperationModule.py
-The `HandOperationModule.py` file is responsible for performing all recognitions and calculations related to hand gestures. It processes the video frames to detect hand landmarks and interprets the gestures based on predefined conditions. This module handles the core functionality of gesture recognition, enabling the main application to seamlessly control the mouse and perform various actions based on user input.
+---
+
+## Core Modules
+
+### HandOperationModule.py
+Handles:
+- Hand landmark detection
+- Finger state recognition
+- Distance and gesture calculations
+- Gesture interpretation logic
+
+This serves as the perception and control module of the system.
+
+### VirtualMouse.py
+Responsible for:
+- Camera stream processing
+- Gesture-to-action mapping
+- Cursor control
+- Mouse event execution
+
+This acts as the interaction layer of the project.
+
+---
 
 ## Technologies Used
-- **OpenCV**: For video capturing and processing.
-- **Mediapipe**: For hand gesture recognition.
-- **PyAutoGUI**: For controlling the mouse.
-- **Pynput**: For handling advanced mouse controls.
-- **NumPy**: For numerical operations and array manipulations (used indirectly through OpenCV).
-- **Math**: For mathematical calculations, particularly for distance calculations.
-- **Time**: For managing timing operations in the program.
+- OpenCV — Real-time computer vision processing  
+- MediaPipe — Hand tracking and landmark detection  
+- PyAutoGUI — Cursor movement and mouse actions  
+- Pynput — Advanced mouse control  
+- NumPy — Numerical operations  
+- Math — Distance calculations  
+- Time — Timing and gesture state management
+
+---
+
+## Applications
+- Touchless human-computer interaction
+- Accessibility-focused interfaces
+- Gesture-based control systems
+- Computer vision HCI experimentation
+- Foundation for robotics and vision-based interaction research
+
+---
 
 ## Future Improvements
-- Gesture customization for additional functionality.
-- Enhance pointer stability and reduce shaking.
-- Add gesture-based keyboard inputs.
+- Gesture customization and user-defined controls  
+- Improved pointer smoothing and stability  
+- Gesture-based keyboard shortcuts  
+- Multi-hand interaction support  
+- Depth-aware interaction using stereo or RGB-D cameras  
+- Integration with AI-based gesture recognition models
+
+---
+
+## Highlights
+- Real-time gesture-based mouse control  
+- Landmark-driven interaction logic  
+- Practical HCI + Computer Vision project  
+- Modular and extensible architecture
