@@ -1,64 +1,109 @@
-# Virtual Mouse with Computer Vision
+# V-Mouse — Virtual Mouse
 
-## Description
-**Virtual Mouse with Computer Vision** is a computer vision-based project that utilizes hand gestures to control the mouse pointer, perform clicks, scrolling, screenshots, and drag-and-drop actions. This project employs OpenCV, Mediapipe, PyAutoGUI, and Pynput for gesture recognition and cursor control, providing a hands-free way to interact with your computer.
+Your hand is your mouse. A real-time hand gesture recognition system that replaces your physical mouse with hand movements captured through a webcam.
+
+## Demo
+
+<a href="https://drive.google.com/file/d/1vt72eIsP8f9Jt2nB6dklmLsPedNMGpBO/view?usp=sharing">
+  <img src="assets/demo/demo_thumbnail.png" alt="V-Mouse Demo Video" width="100%">
+</a>
+
+<p align="center"><em>Click the thumbnail to watch the full demo</em></p>
 
 ## Features
-1. Move Pointer: Move the pointer by bringing the thumb tip (4) and index finger pip (6) (two green points) closer together. When they are apart, it switches to click mode.
-2. Left Click: Perform a left click by putting the index finger (red point) down and up, mimicking the press of a mouse button.
-3. Right Click: Perform a right click by putting the middle finger (red point) down and up, similar to pressing the right button on a mouse.
-4. Scroll:
-   1. Scroll Up: Close the ring finger (blue point) and simultaneously raise the index finger, keeping the pinky finger (pink dot) up.
-   2. Scroll Down: Close the ring finger (blue point) and simultaneously raise the middle finger, keeping the pinky finger (pink dot) up.
-5. Drag and Drop: Bring the index tip (8) and middle tip (12) (red dots) closer together to initiate drag mode. Move objects while the tips are close, and release to drop the object once the tips separate, keeping the pinky finger (pink dot) up.
-6. Screenshot: Take a screenshot by closing the pinky finger (pink dot) and forming a fist (all fingers closed), then opening the fist.
+
+- **Move Pointer** — Bring THUMB_TIP (4) and INDEX_FINGER_PIP (6) together (green dots), then point to move the cursor.
+- **Right Click** — Put INDEX_FINGER_TIP (8) down and up. Supports double click.
+- **Left Click** — Put MIDDLE_FINGER_TIP (12) down and up.
+- **Scroll Down** — Close RING_FINGER_TIP (16) to enter scroll mode, then put INDEX_FINGER_TIP (8) down.
+- **Scroll Up** — Close RING_FINGER_TIP (16) to enter scroll mode, then put MIDDLE_FINGER_TIP (12) down (index up).
+- **Drag & Drop** — Pinch INDEX_FINGER_TIP (8) and MIDDLE_FINGER_TIP (12) together sideways to grab, move hand to drag, separate to drop.
+- **Screenshot** — Close all fingers into a fist, then open your hand to capture.
+
+![Output Demo](assets/images/output.png)
 
 ## Hand Landmarks
-The following image shows the landmarks used for gesture recognition in the project:
 
-![Hand Landmarks](hand_landmarks.png)
+The system tracks 21 hand landmarks using MediaPipe to recognize gestures:
+
+![Hand Landmarks](assets/images/hand_landmarks.png)
+
+> See [docs/gesture_reference.md](docs/gesture_reference.md) for the full gesture guide and [docs/system_architecture.md](docs/system_architecture.md) for the technical deep-dive.
 
 ## Installation
-### Clone the repository:
-```bash
-git clone https://github.com/Rounak7721/Virtual-Mouse-with-Hand-Gestures.git
-```
 
-### Install the required dependencies: 
-Navigate to the project directory and install the necessary Python libraries:
+### Prerequisites
+- Python 3.12+
+- Webcam
+- Works on **Linux**, **Windows**, and **macOS** (multi-monitor targeting uses `xrandr`, so it's Linux-only — on other platforms the cursor maps to the full screen)
+
+### Setup
+
 ```bash
+# Clone the repository
+git clone https://github.com/Rounak7721/Virtual-Mouse.git
+cd Virtual-Mouse
+
+# Create and activate a virtual environment
+python -m venv cv_env
+source cv_env/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Run the project: 
-Use the following command to start the virtual mouse:
+### Run
+
 ```bash
-python VirtualMouse.py
+cd src
+python main.py
 ```
+
+Press `q` to quit the application.
 
 ## Project Structure
+
 ```
-Virtual-Mouse-with-Hand-Gestures/
-│
-├── requirements.txt          # List of dependencies
-├── HandOperationModule.py    # Performs all recognitions, calculations, and landmark detections
-├── VirtualMouse.py           # Main file that uses HandOperationModule to process gestures and control the mouse
-└── README.md                 # Project documentation
+Virtual-Mouse/
+├── src/
+│   ├── main.py                 # Entry point — camera loop, gesture-to-action mapping
+│   ├── HandOperationModule.py  # MediaPipe wrapper — landmark detection & finger state
+│   └── config.py               # All tunable parameters
+├── assets/
+│   ├── demo/
+│   │   └── demo_thumbnail.png  # Demo video thumbnail
+│   └── images/
+│       ├── hand_landmarks.png  # Landmark reference diagram
+│       └── output.png          # Application screenshot
+├── docs/
+│   ├── system_architecture.md  # Architecture diagrams & data flow
+│   └── gesture_reference.md    # Gesture guide & config reference
+├── Screenshots/                # Auto-generated screenshots (created at runtime)
+├── requirements.txt            # Pinned Python dependencies
+└── README.md
 ```
 
-## HandOperationModule.py
-The `HandOperationModule.py` file is responsible for performing all recognitions and calculations related to hand gestures. It processes the video frames to detect hand landmarks and interprets the gestures based on predefined conditions. This module handles the core functionality of gesture recognition, enabling the main application to seamlessly control the mouse and perform various actions based on user input.
+## Technologies
 
-## Technologies Used
-- **OpenCV**: For video capturing and processing.
-- **Mediapipe**: For hand gesture recognition.
-- **PyAutoGUI**: For controlling the mouse.
-- **Pynput**: For handling advanced mouse controls.
-- **NumPy**: For numerical operations and array manipulations (used indirectly through OpenCV).
-- **Math**: For mathematical calculations, particularly for distance calculations.
-- **Time**: For managing timing operations in the program.
+| Library | Version | Purpose |
+|---|---|---|
+| [OpenCV](https://opencv.org/) | 4.13.0 | Video capture & frame processing |
+| [MediaPipe](https://mediapipe.dev/) | 0.10.14 | Hand landmark detection |
+| [PyAutoGUI](https://pyautogui.readthedocs.io/) | 0.9.54 | Cursor movement & scrolling |
+| [Pynput](https://pynput.readthedocs.io/) | 1.8.2 | Mouse button press/release |
+| [NumPy](https://numpy.org/) | 2.4.4 | Coordinate interpolation |
+
+## Configuration
+
+All parameters can be adjusted in `src/config.py`. See the [Configuration Reference](docs/gesture_reference.md#configuration-reference) for details on each parameter.
 
 ## Future Improvements
-- Gesture customization for additional functionality.
-- Enhance pointer stability and reduce shaking.
-- Add gesture-based keyboard inputs.
+
+- Gesture customization for additional functionality
+- Enhanced pointer stability and reduced jitter
+- Gesture-based keyboard inputs
+- Windows / macOS multi-monitor support
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

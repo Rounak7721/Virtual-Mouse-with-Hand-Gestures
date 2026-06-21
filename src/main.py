@@ -1,3 +1,14 @@
+import os
+import sys
+import traceback
+
+# Save original stderr to restore later for Python exceptions
+old_stderr_fd = os.dup(sys.stderr.fileno())
+# Redirect C-level stderr to /dev/null to silence Mediapipe/OpenCV C++ warnings
+devnull_fd = os.open(os.devnull, os.O_WRONLY)
+os.dup2(devnull_fd, sys.stderr.fileno())
+os.close(devnull_fd)
+
 # Modules
 import cv2
 import numpy as np
@@ -6,30 +17,52 @@ import pyautogui as pag
 from pynput.mouse import Button, Controller
 import time
 import datetime as dt
-import os
+import config
+import warnings
+warnings.filterwarnings("ignore")
+
+import subprocess
+import re
+
+def get_monitors():
+    monitors = []
+    try:
+        output = subprocess.check_output("xrandr").decode('utf-8')
+        matches = re.findall(r' connected (?:primary )?(\d+)x(\d+)\+(\d+)\+(\d+)', output)
+        for m in matches:
+            w, h, x, y = map(int, m)
+            monitors.append((x, y, w, h))
+        # Sort by x coordinate so monitor 1 is left, 2 is right
+        monitors.sort(key=lambda m: m[0])
+    except:
+        pass
+    return monitors
+
 
 # Turn off PyAutoGUI's failsafe
 pag.FAILSAFE = False
+pag.PAUSE = 0
 
 # Virtual Mouse Class
 class VirtualMouse():
-    def __init__(self, win_w, win_h, screen_w, screen_h):
+    def __init__(self, win_w, win_h, screen_w, screen_h, screen_x=0, screen_y=0):
         
         # ========== Variables ==========
         # Screen,window width and height
         self.win_w, self.win_h = win_w, win_h 
         self.screen_w, self.screen_h = screen_w, screen_h
+        self.screen_x, self.screen_y = screen_x, screen_y
 
         # Previous pointer location
         self.static_plocX, self.static_plocY = 0, 0  # Previous pointer locations
 
         # Check clicks
         self.click_performed = False  # Flag to prevent double clicks
-        self.click_wait_time = 0.3 # Time to wait before another click
+        self.click_wait_time = config.CLICK_WAIT_TIME # Time to wait before another click
 
         # Check Action
         self.last_action_time = 0
-        self.action_duration = 0.2  # Time in seconds to keep action state
+        self.action_duration = config.ACTION_DURATION  # Time in seconds to keep action state
     
         # Screen shot flag
         self.screenshot_taken = False  # to ensure only one screenshot is taken per fist close
@@ -44,14 +77,14 @@ class VirtualMouse():
         self.txt_color = (0, 0, 0)
 
         # Scroll Lines
-        self.numLines = 100
+        self.numLines = config.SCROLL_LINES
 
         # Circle radius
-        self.radius = 5
+        self.radius = config.MARKER_RADIUS
 
         # ========== Objects =========
         # HandOperationModule object
-        self.handOp = HandOperationModule.HandOperations(max_hands=1, detectConf=0.7, trackConf=0.7)
+        self.handOp = HandOperationModule.HandOperations(max_hands=1, detectConf=config.DETECT_CONF, trackConf=config.TRACK_CONF)
 
         # Mouse controller object
         self.mouseCon = Controller()
@@ -60,11 +93,11 @@ class VirtualMouse():
     def MovePointer(self, lmList, frame, upList):
 
         # Screen boundary reduction value
-        boundR = 120
+        boundR = config.BOUND_R
 
         # Smoothing Factor
-        smoothFact = 1  
-        deadZone = 10  # Minimum movement required to move pointer
+        smoothFact = config.SMOOTH_FACT  
+        deadZone = config.DEAD_ZONE  # Minimum movement required to move pointer
 
         # Check if landmark List is not empty
         if len(lmList) != 0:
@@ -91,7 +124,7 @@ class VirtualMouse():
                 # Check if the movement is beyond the dead zone
                 if abs(clocX - self.static_plocX) > deadZone or abs(clocY - self.static_plocY) > deadZone:
                     # Move the cursor
-                    pag.moveTo(clocX, clocY)
+                    pag.moveTo(self.screen_x + clocX, self.screen_y + clocY)
 
                     # Update static previous location values
                     self.static_plocX, self.static_plocY = clocX, clocY
@@ -127,15 +160,16 @@ class VirtualMouse():
 
     # Function ScreenShot: Takes Screenshot of screen
     def screenShot(self, frame):
-        ssImg = pag.screenshot()
+        ssImg = pag.screenshot(region=(self.screen_x, self.screen_y, self.screen_w, self.screen_h))
         tStamp = dt.datetime.now()
         label = tStamp.strftime("%d%m%Y_%H%M%S")
-        dir_path = os.path.dirname(os.path.realpath(__file__))
+        # Project root is one level up from src/
+        project_root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         # Create Screenshots directory if it doesn't exist
-        screenshots_dir = os.path.join(dir_path, "Screenshots")
+        screenshots_dir = os.path.join(project_root, "Screenshots")
         if not os.path.exists(screenshots_dir):
             os.makedirs(screenshots_dir)
-        ssImg.save(f"{dir_path}\Screenshots\screenshot_{label}.png")
+        ssImg.save(os.path.join(screenshots_dir, f"screenshot_{label}.png"))
 
     # Function dragDrop: Enables dragging and dropping of objects
     def dragDrop(self, lmList, frame, upList, index_mid_tip_dist):
@@ -158,28 +192,30 @@ class VirtualMouse():
                 self.dragging = False  # Reset dragging flag
 
     # Function drawMarks: Draws Landmarks on action popints
-    def drawMarks(self, frame):
+    def drawMarks(self, frame, bgImage=None):
         # Detect hand and landmarks
-        frame = self.handOp.findHands(frame, draw=False)
-        self.lmList, bbox = self.handOp.findPosition(frame, draw=False)
+        out_frame = self.handOp.findHands(frame, draw=True, bgImage=bgImage)
+        self.lmList, bbox = self.handOp.findPosition(out_frame, draw=False)
 
         # Draw markers on gesture points
         if len(self.lmList) != 0:
             thumb_tip, index_pip, index_tip, middle_tip, ring_tip, pinky_tip = (self.lmList[4][1],self.lmList[4][2]), (self.lmList[6][1],self.lmList[6][2]), (self.lmList[8][1],self.lmList[8][2]), (self.lmList[12][1],self.lmList[12][2]), (self.lmList[16][1],self.lmList[16][2]), (self.lmList[20][1],self.lmList[20][2])
 
             # Move Points
-            cv2.circle(frame, thumb_tip, self.radius, (0,255,0),cv2.FILLED)
-            cv2.circle(frame, index_pip, self.radius, (0,255,0),cv2.FILLED)
+            cv2.circle(out_frame, thumb_tip, self.radius, (0,255,0),cv2.FILLED)
+            cv2.circle(out_frame, index_pip, self.radius, (0,255,0),cv2.FILLED)
 
             # Click Points
-            cv2.circle(frame, index_tip, self.radius, (0,0,255),cv2.FILLED)
-            cv2.circle(frame, middle_tip, self.radius, (0,0,255),cv2.FILLED)
+            cv2.circle(out_frame, index_tip, self.radius, (0,0,255),cv2.FILLED)
+            cv2.circle(out_frame, middle_tip, self.radius, (0,0,255),cv2.FILLED)
 
             # Scroll Point
-            cv2.circle(frame, ring_tip, self.radius, (255,0,0),cv2.FILLED)
+            cv2.circle(out_frame, ring_tip, self.radius, (255,0,0),cv2.FILLED)
 
             # Screenshot Point
-            cv2.circle(frame, pinky_tip, self.radius, (255,0,255),cv2.FILLED)
+            cv2.circle(out_frame, pinky_tip, self.radius, (255,0,255),cv2.FILLED)
+            
+        return out_frame
     
     # Funtion action: Performs main gesture actions
     def action(self, frame):
@@ -260,54 +296,74 @@ class VirtualMouse():
 
 # Function: Main
 def main():
-    # ========== Variables ==========
-    # Setup window dimensions
-    win_w, win_h = 640, 512  # mouse->640, 512
-    # Get screen dimensions
-    screen_w, screen_h = pag.size()
+    try:
+        # ========== Variables ==========
+        # Setup window dimensions
+        win_w, win_h = config.WIN_W, config.WIN_H
+        
+        # Get screen dimensions and offsets
+        screen_x, screen_y = 0, 0
+        screen_w, screen_h = pag.size()
+        
+        if getattr(config, 'SINGLE_MONITOR', False):
+            monitors = get_monitors()
+            if monitors and 1 <= config.MONITOR_NUMBER <= len(monitors):
+                screen_x, screen_y, screen_w, screen_h = monitors[config.MONITOR_NUMBER - 1]
 
-    # ========== Objects ========== 
-    # Virtual Mouse Class object
-    vmouse = VirtualMouse(win_w, win_h, screen_w,screen_h)
+        # ========== Objects ========== 
+        # Virtual Mouse Class object
+        vmouse = VirtualMouse(win_w, win_h, screen_w, screen_h, screen_x, screen_y)
 
-    # Video Object
-    cam = cv2.VideoCapture(0)
+        # Video Object
+        cam = cv2.VideoCapture(config.CAM_ID)
 
-    # Setup window width and height
-    cam.set(3, win_w)  # width
-    cam.set(4, win_h)  # height
+        # Setup window width and height
+        cam.set(3, win_w)  # width
+        cam.set(4, win_h)  # height
 
-    # Main Loop
-    while True:
-        if not cam.isOpened():
-            print("Error: Camera not opened.")
-            break
+        # Main Loop
+        while True:
+            if not cam.isOpened():
+                print("Error: Camera not opened.")
+                break
 
-        # Read cam input
-        ret, frame = cam.read()
-        if not ret:
-            print("Failed to capture image")
-            continue
+            # Read cam input
+            ret, frame = cam.read()
+            if not ret:
+                print("Failed to capture image")
+                continue
 
-        # Flip frame
-        frame = cv2.flip(frame, 1)
+            # Flip frame
+            frame = cv2.flip(frame, 1)
 
-        # Draw marks on action Points
-        vmouse.drawMarks(frame)
+            # Create black background
+            bg = np.zeros_like(frame)
 
-        # Perform actions
-        vmouse.action(frame)
+            # Draw marks on action Points
+            display_frame = vmouse.drawMarks(frame, bgImage=bg)
 
-        # Display frame
-        cv2.imshow("Virtual Mouse", frame)
+            # Perform actions
+            vmouse.action(display_frame)
 
-        # Exit Condition
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    
-    # Clean Up
-    cam.release()
-    cv2.destroyAllWindows()
+            # Display frame
+            cv2.imshow("Virtual Mouse", display_frame)
+
+            # Exit Condition
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+        
+        # Clean Up
+        cam.release()
+        cv2.destroyAllWindows()
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        # Restore stderr and print the error
+        os.dup2(old_stderr_fd, sys.stderr.fileno())
+        traceback.print_exc()
+    finally:
+        # Always restore stderr on exit
+        os.dup2(old_stderr_fd, sys.stderr.fileno())
 
 # Run main function
 if __name__ == "__main__":

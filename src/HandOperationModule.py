@@ -4,7 +4,7 @@ import mediapipe as mp
 import time as t
 import math
 
-# HandOperations calss
+# HandOperations class
 class HandOperations():
 
     def __init__(self, mode=False, max_hands=2, detectConf=0.5, trackConf=0.5):
@@ -25,12 +25,12 @@ class HandOperations():
         self.mpDraw = mp.solutions.drawing_utils
 
         # Specs for landmarks and connection lines
-        self.lmSpec = self.mpDraw.DrawingSpec(color=(0,0,255), thickness=2, circle_radius=2)
-        self.conSpec = self.mpDraw.DrawingSpec(color=(0,255,0), thickness=2)
+        self.lmSpec = self.mpDraw.DrawingSpec(color=(255,255,255), thickness=1, circle_radius=1) # White, smaller
+        self.conSpec = self.mpDraw.DrawingSpec(color=(0,255,255), thickness=2) # Yellow lines
 
 
     # Function findHands: detects hands and draws landmarks & connection lines
-    def findHands(self, frame, draw=True):
+    def findHands(self, frame, draw=True, bgImage=None):
         
         # Convert frame from BGR to RGB
         frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -38,17 +38,19 @@ class HandOperations():
         # Process frame
         self.results = self.hands.process(frameRGB)
 
+        out_frame = frame if bgImage is None else bgImage
+
         # Extract landmarks and draw for multiple hands
         if self.results.multi_hand_landmarks:
             for hlmarks in self.results.multi_hand_landmarks:
                 # Check if draw is True
                 if draw:
                     # Draw landmarks with connections
-                    self.mpDraw.draw_landmarks(frame, hlmarks, 
+                    self.mpDraw.draw_landmarks(out_frame, hlmarks, 
                                                self.mpHands.HAND_CONNECTIONS,
                                                landmark_drawing_spec = self.lmSpec,
                                                connection_drawing_spec= self.conSpec)
-        return frame
+        return out_frame
     
 
     # Function findPosition: Finds position of all 21 landmarks and stores in a list

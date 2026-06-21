@@ -1,0 +1,15 @@
+# Virtual environment
+cv_env/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+
+# Video editing workspace (Kdenlive project, raw footage, exports)
+render_demo/
+
+# Runtime-generated screenshots
+Screenshots/
